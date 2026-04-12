@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: aigc_db
+    ports: ["5432:5432"]
+  backend:
+    build: ./backend
+    ports: ["8000:8000"]
+    environment:
+      - POSTGRES_SERVER=db
+      - SECRET_KEY=/run/secrets/jwt_secret
+    depends_on: [db]
+    secrets: [jwt_secret]
+  web:
+    build: ./web
+    ports: ["80:80"]
+secrets:
+  jwt_secret:
+    file: ./secrets/jwt_secret.txt
